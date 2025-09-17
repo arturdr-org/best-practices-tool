@@ -1,0 +1,25 @@
+external_practices:
+  - name: "GitHub Docs - Best Practices"
+    url: "https://docs.github.com/en/repositories/creating-and-managing-repositories/best-practices-for-repositories"
+    type: "markdown"
+    destination: "github_repo_best_practices.md"
+  - name: "Awesome Shell"
+    url: "https://raw.githubusercontent.com/alebcay/awesome-shell/master/README.md" # Using raw content URL
+    type: "markdown"
+    destination: "awesome_shell.md"
+  - name: "The Art of Command Line"
+    url: "https://raw.githubusercontent.com/jlevy/the-art-of-command-line/master/README.md" # Using raw content URL
+    type: "markdown"
+    destination: "the_art_of_command_line.md"
+  - name: "Google Shell Style Guide"
+    url: "https://google.github.io/styleguide/shellguide.html" # This is an HTML page, will need special handling or just link
+    type: "html"
+    destination: "google_shell_style_guide.html"
+  - name: "Git Best Practices (sampaiodias)"
+    url: "https://raw.githubusercontent.com/sampaiodias/git-boas-praticas/master/README.md" # Using raw content URL
+    type: "markdown"
+    destination: "git_boas_praticas.md"
+  - name: "OWASP Cheat Sheet Series"
+    url: "https://cheatsheetseries.owasp.org/" # This is a website, will need special handling or just link
+    type: "html"
+    destination: "owasp_cheat_sheet_series.html"

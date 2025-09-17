@@ -1,6 +1,7 @@
 import os
 import shutil
 import requests
+import yaml # Added
 
 TOOLS_BEST_PRACTICES = {
     "docker": {
@@ -42,6 +43,33 @@ def update_best_practices_docs():
             download_file(info["url"], dest_file)
         else:
             print(f"{tool_name} não detectado, pulando.")
+    
+    update_external_practices() # Call the new function
+
+def update_external_practices():
+    print("Atualizando práticas externas...")
+    config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
+    if not os.path.exists(config_path):
+        print("config.yaml não encontrado. Pulando atualização de práticas externas.")
+        return
+
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+
+    if 'external_practices' in config:
+        os.makedirs("practices/external", exist_ok=True)
+        for practice in config['external_practices']:
+            name = practice.get('name', 'unknown')
+            url = practice.get('url')
+            destination = practice.get('destination')
+            
+            if url and destination:
+                dest_path = os.path.join("practices", "external", destination)
+                print(f"Baixando prática externa: {name} de {url}...")
+                download_file(url, dest_path)
+            else:
+                print(f"Configuração inválida para prática externa: {practice}")
+    print("Atualização de práticas externas concluída.")
 
 if __name__ == "__main__":
     update_best_practices_docs()
