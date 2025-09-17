@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-import subprocess
 
 def install_practices_docs():
     os.makedirs("practices", exist_ok=True)
@@ -34,36 +33,6 @@ def install_shell_hook():
     else:
         print(f"{bashrc} não encontrado, crie manualmente para habilitar hooks.")
 
-def install_git_hooks():
-    print("Instalando Git hooks...")
-    # Find all git repositories in the home directory
-    home = Path.home()
-    for git_dir in home.glob('**/.git'):
-        if git_dir.is_dir():
-            repo_root = git_dir.parent
-            print(f"Configurando hooks para o repositório: {repo_root}")
-
-            # Create pre-commit hook
-            pre_commit_hook_path = git_dir / "hooks" / "pre-commit"
-            our_pre_commit_script = Path(__file__).parent / "hooks" / "git_hook_pre_commit"
-            our_pre_commit_script = our_pre_commit_script.resolve()
-
-            with open(pre_commit_hook_path, "w") as f:
-                f.write(f"#!/bin/bash\n{our_pre_commit_script}\n")
-            os.chmod(pre_commit_hook_path, 0o755)
-            print(f"  - pre-commit hook instalado em {pre_commit_hook_path}")
-
-            # Create pre-push hook
-            pre_push_hook_path = git_dir / "hooks" / "pre-push"
-            our_pre_push_script = Path(__file__).parent / "hooks" / "git_hook_pre_push"
-            our_pre_push_script = our_pre_push_script.resolve()
-
-            with open(pre_push_hook_path, "w") as f:
-                f.write(f"#!/bin/bash\n{our_pre_push_script}\n")
-            os.chmod(pre_push_hook_path, 0o755)
-            print(f"  - pre-push hook instalado em {pre_push_hook_path}")
-    print("Instalação de Git hooks concluída.")
-
 def install_wrapper():
     home = Path.home()
     wrapper_path = Path(__file__).parent / "wrapper.sh"
@@ -90,7 +59,6 @@ def install_wrapper():
 def main():
     install_practices_docs()
     install_shell_hook()
-    install_git_hooks()
     install_wrapper()
     print("Instalação completa. Reabra o terminal para aplicar.")
 
