@@ -51,6 +51,32 @@ O script validará e emitirá alertas, pedindo confirmação antes de executar o
 
 ---
 
+## Atualização automática das boas práticas
+
+Após a instalação, um cron job será agendado automaticamente para executar todas as noites às 03:00 AM e atualizar as boas práticas das ferramentas detectadas.
+
+Se desejar rodar a atualização manualmente, execute:
+
+```bash
+python3 /caminho/para/update_practices_cron.py
+```
+
+Para verificar se o cron job está ativo, use:
+
+```bash
+crontab -l
+```
+
+---
+
+Se desejar remover o cron job, rode:
+
+```bash
+crontab -l | grep -v update_practices_cron.py | crontab -
+```
+
+---
+
 ## Atualizações e contribuições
 
 - O repositório pode ser atualizado para adicionar novas regras e práticas facilmente.  

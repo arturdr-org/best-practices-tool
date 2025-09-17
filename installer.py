@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
 import subprocess
-import requests # Added for update_practices.py
-from update_practices import update_best_practices_docs # Import the new function name
+import requests
+import getpass # Added
+import shutil # Added for shutil.which in schedule_cron_update
+from update_practices import update_best_practices_docs
 
 def install_practices_docs():
     os.makedirs("practices", exist_ok=True)
@@ -89,12 +91,34 @@ def install_wrapper():
             f.write(f"\n# Alias para comando validado\n{alias_line}")
         print(f"Alias adicionado no {bashrc}")
 
+def schedule_cron_update():
+    user = getpass.getuser()
+    python_path = shutil.which("python3") or "/usr/bin/python3"
+    script_path = str(Path(__file__).parent / "update_practices_cron.py")
+
+    cron_job = f"0 3 * * * {python_path} {script_path} >> /tmp/update_practices.log 2>&1\n"
+
+    # Read current crontab, if any
+    try:
+        existing_crontab = subprocess.check_output(["crontab", "-l"], text=True)
+    except subprocess.CalledProcessError:
+        existing_crontab = ""
+
+    if cron_job not in existing_crontab:
+        new_crontab = existing_crontab + cron_job
+        proc = subprocess.Popen(["crontab", "-"], stdin=subprocess.PIPE, text=True)
+        proc.communicate(input=new_crontab)
+        print("Cron job para atualização de boas práticas agendado para 03:00 AM diariamente.")
+    else:
+        print("Cron job de atualização já está agendado.")
+
 def main():
     install_practices_docs()
     install_shell_hook()
     install_git_hooks()
     install_wrapper()
-    update_best_practices_docs() # Call the new function name
+    update_best_practices_docs()
+    schedule_cron_update() # Call the new function
     print("Instalação completa. Reabra o terminal para aplicar.")
 
 if __name__ == "__main__":
