@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "🔔 Git pre-commit hook: Verificando boas práticas de commit..."
+# Add your pre-commit checks here
+exit 0

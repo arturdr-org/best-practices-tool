@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "🔔 Git pre-push hook: Verificando boas práticas de push..."
+# Add your pre-push checks here
+exit 0
