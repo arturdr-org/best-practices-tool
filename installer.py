@@ -1,41 +1,42 @@
 import os
-import shutil
 from pathlib import Path
 
-def install_practices():
-    print("Instalando arquivos de boas práticas...")
+def install_practices_docs():
     os.makedirs("practices", exist_ok=True)
-    # Exemplos simples - criar arquivos markdown de boas práticas
-    with open("practices/git_practices.md", "w") as f:
-        f.write("# Boas Práticas Git\n- Commit mensagens claras\n- Branch protection\n")
-    with open("practices/bash_practices.md", "w") as f:
-        f.write("# Boas Práticas Bash\n- Use set -e para abortar em erro\n- Evite variáveis globais\n")
-    print("Arquivos de boas práticas criados em ./practices/")
+    docs = {
+        "git_practices.md": "# Boas Práticas Git\n- Mensagens claras\n- Branch protection\n",
+        "bash_practices.md": "# Boas Práticas Bash\n- Use set -e\n- Variáveis locais\n",
+        "security_practices.md": "# Segurança\n- Permissões mínimas\n- SSH seguro\n",
+        "automation_practices.md": "# Automação\n- Versionar código IaC\n- Testar playbooks\n"
+    }
+    for filename, content in docs.items():
+        with open(f"practices/{filename}", "w") as f:
+            f.write(content)
+    print("Docs de boas práticas instaladas em ./practices")
 
-def install_hooks():
-    print("Configurando hooks e wrappers...")
-    home = str(Path.home())
-    bashrc = os.path.join(home, ".bashrc")
+def install_shell_hook():
+    home = Path.home()
+    bashrc = home / ".bashrc"
+    hook_path = Path(__file__).parent / "hooks" / "pre_command_check.sh"
+    hook_path = hook_path.resolve()
 
-    hook_script = os.path.abspath("hooks/pre_command_check.sh")
-    if not os.path.isfile(hook_script):
-        print(f"Script de hook {hook_script} não encontrado!")
-        return
-
-    line = f"source {hook_script}\n"
-    with open(bashrc, "r") as f:
-        content = f.read()
-    if line not in content:
-        with open(bashrc, "a") as f:
-            f.write(f"\n# Hook de boas práticas\n{line}")
-        print(f"Hook adicionado ao {bashrc}")
+    hook_line = f"source {hook_path}\n"
+    if bashrc.exists():
+        with open(bashrc, "r") as f:
+            content = f.read()
+        if hook_line not in content:
+            with open(bashrc, "a") as f:
+                f.write(f"\n# Hook de boas práticas\n{hook_line}")
+            print(f"Hook instalado no {bashrc}")
+        else:
+            print("Hook já está instalado.")
     else:
-        print("Hook já está configurado no .bashrc")
+        print(f"{bashrc} não encontrado, crie manualmente para habilitar hooks.")
 
 def main():
-    install_practices()
-    install_hooks()
-    print("Instalação concluída! Abra um novo terminal para as alterações terem efeito.")
+    install_practices_docs()
+    install_shell_hook()
+    print("Instalação inicial completa. Abra novo terminal para aplicar.")
 
 if __name__ == "__main__":
     main()
