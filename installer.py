@@ -64,12 +64,35 @@ def install_git_hooks():
             print(f"  - pre-push hook instalado em {pre_push_hook_path}")
     print("Instalação de Git hooks concluída.")
 
+def install_wrapper():
+    home = Path.home()
+    wrapper_path = Path(__file__).parent / "wrapper.sh"
+    destination = home / "bin" / "run_validated_command.sh"
+    os.makedirs(destination.parent, exist_ok=True)
+    if not destination.exists():
+        with open(wrapper_path, "r") as src, open(destination, "w") as dst:
+            dst.write(src.read())
+        os.chmod(destination, 0o755)
+        print(f"Wrapper instalado em {destination}")
+    else:
+        print("Wrapper já está instalado.")
+
+    # Seta alias no bashrc
+    bashrc = home / ".bashrc"
+    alias_line = "alias run_validated_command='$HOME/bin/run_validated_command.sh'\n"
+    with open(bashrc, "r") as f:
+        content = f.read()
+    if alias_line not in content:
+        with open(bashrc, "a") as f:
+            f.write(f"\n# Alias para comando validado\n{alias_line}")
+        print(f"Alias adicionado no {bashrc}")
 
 def main():
     install_practices_docs()
     install_shell_hook()
-    install_git_hooks() # Call the new function
-    print("Instalação inicial completa. Abra novo terminal para aplicar.")
+    install_git_hooks()
+    install_wrapper()
+    print("Instalação completa. Reabra o terminal para aplicar.")
 
 if __name__ == "__main__":
     main()
