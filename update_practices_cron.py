@@ -41,7 +41,7 @@ def update_best_practices_docs():
         if is_tool_installed(info["command"]):
             print(f"Detectado {tool_name}, atualizando boas práticas...")
             dest_file = os.path.join("practices", "auto", info["filename"])
-            download_file(info["url"], dest_file)
+            download_file(url, dest_file)
         else:
             print(f"{tool_name} não detectado, pulando.")
 
