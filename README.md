@@ -1,5 +1,10 @@
 # 🚀 Repositório de Boas Práticas Automatizadas
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org/)
+<!-- Add GitHub Actions Workflow Status Badge here if applicable -->
+<!-- Example: ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/arturdrr/best-practices-tool/main?label=build) -->
+
 Este projeto tem como objetivo automatizar a aplicação de boas práticas no terminal e Git, fornecendo documentação, validações e lembretes no ambiente do usuário para maior segurança e eficiência.
 
 ---
