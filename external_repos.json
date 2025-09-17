@@ -1,0 +1,14 @@
+{
+  "repos": [
+    {
+      "name": "practice-git",
+      "url": "https://raw.githubusercontent.com/grayghostvisuals/practice-git/master/README.md",
+      "local_path": "external/practice-git/README.md"
+    },
+    {
+      "name": "git-practice",
+      "url": "https://raw.githubusercontent.com/PIC16B/git-practice/main/README.md",
+      "local_path": "external/git-practice/README.md"
+    }
+  ]
+}

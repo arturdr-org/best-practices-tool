@@ -2,6 +2,7 @@ import os
 import shutil
 import requests
 import yaml # Added
+from utils import load_config, is_validation_enabled # Added
 
 TOOLS_BEST_PRACTICES = {
     "docker": {
@@ -35,18 +36,24 @@ def download_file(url, dest_path):
         print(f"Erro baixando {url}: {e}")
 
 def update_best_practices_docs():
+    config = load_config() # Load config
     os.makedirs("practices/auto", exist_ok=True)
     for tool_name, info in TOOLS_BEST_PRACTICES.items():
-        if is_tool_installed(info["command"]):
+        if is_validation_enabled(tool=tool_name) and is_tool_installed(info["command"]): # Check if enabled and installed
             print(f"Detectado {tool_name}, atualizando boas práticas...")
             dest_file = os.path.join("practices", "auto", info["filename"])
             download_file(info["url"], dest_file)
         else:
-            print(f"{tool_name} não detectado, pulando.")
+            print(f"{tool_name} não detectado ou desativado, pulando.")
     
     update_external_practices() # Call the new function
 
 def update_external_practices():
+    config = load_config() # Load config
+    if not is_validation_enabled(): # Check global validation
+        print("Atualização de práticas externas desativada globalmente.")
+        return
+
     print("Atualizando práticas externas...")
     config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
     if not os.path.exists(config_path):
