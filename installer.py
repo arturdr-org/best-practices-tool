@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import subprocess
 import requests # Added for update_practices.py
-from update_practices import update_best_practices # Import the new function
+from update_practices import update_best_practices_docs # Import the new function name
 
 def install_practices_docs():
     os.makedirs("practices", exist_ok=True)
@@ -94,7 +94,7 @@ def main():
     install_shell_hook()
     install_git_hooks()
     install_wrapper()
-    update_best_practices() # Call the new function
+    update_best_practices_docs() # Call the new function name
     print("Instalação completa. Reabra o terminal para aplicar.")
 
 if __name__ == "__main__":
