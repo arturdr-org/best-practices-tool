@@ -1,19 +1,26 @@
 #!/bin/bash
 
-validate_command() {
-  cmd="${BASH_COMMAND}"
+validate_command_with_python() {
+  # Get the full command string
+  local cmd="${BASH_COMMAND}"
 
-  # Exemplo: alertar se usar 'rm' sem opções seguras
-  if [[ "$cmd" =~ ^rm\  && ! "$cmd" =~ -i ]]; then
-    echo "⚠️ Atenção: 'rm' está sem opção '-i' para confirmação. Use com cuidado!"
+  # Path to the Python validator script
+  local python_validator_script="$(dirname "$0")"/../utils.py
+
+  # Run the Python validator and capture its output
+  local validation_output=$(python3 "$python_validator_script" "$cmd")
+
+  # If the Python script returned warnings, display them
+  if [[ -n "$validation_output" && "$validation_output" != "Comando OK." ]]; then
+    echo "$validation_output"
+    # Optionally, you could ask for user confirmation here before proceeding
+    # read -p "Continuar mesmo assim? (s/N): " -n 1 -r
+    # echo
+    # if [[ ! $REPLY =~ ^[Ss]$ ]]; then
+    #   return 1 # Abort command execution
+    # fi
   fi
-
-  # Exemplo: sugerir uso de git pull antes de push
-  if [[ "$cmd" == git\ push* ]]; then
-    echo "💡 Dica: use 'git pull' para atualizar branch antes de 'git push'."
-  fi
-
-  # Outras regras podem ser inseridas aqui...
+  return 0 # Allow command execution
 }
 
-PROMPT_COMMAND=validate_command
+PROMPT_COMMAND=validate_command_with_python
