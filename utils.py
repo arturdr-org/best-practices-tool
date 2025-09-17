@@ -1,7 +1,5 @@
-import sys
-import re
-import yaml # Added
-import os # Added
+import os
+import yaml
 
 def load_config(config_file="config.yaml"):
     script_dir = os.path.dirname(__file__)
@@ -23,31 +21,36 @@ def is_validation_enabled(tool=None):
 def validate_command(cmd):
     warnings = []
 
+    # Ignora validação se globalmente desativado
     if not is_validation_enabled():
-        return warnings # Global validation disabled
+        return []
+
+    # Exemplo: validação para comando docker só se habilitado
+    if cmd.startswith("docker") and not is_validation_enabled("docker"):
+        return []
 
     # Exemplo 1: alerta para uso do rm sem -i (confirmar remoção)
-    if is_validation_enabled(tool="rm") and re.match(r'^rm\s', cmd) and '-i' not in cmd:
-        warnings.append("⚠️ Atenção: comando 'rm' sem opção '-i'. Considere usar para confirmação segura.")
+    if cmd.startswith("rm ") and "-i" not in cmd:
+        warnings.append("⚠️ Atenção: comando 'rm' sem opção '-i'. Use com cuidado!")
 
-    # Sugestão para usar git pull antes de git push
-    if is_validation_enabled(tool="git") and cmd.startswith("git push") and "git pull" not in cmd:
+    # Exemplo 2: sugestão para usar git pull antes de git push
+    if cmd.startswith("git push") and "git pull" not in cmd:
         warnings.append("💡 Dica: use 'git pull' antes de 'git push' para evitar conflitos.")
 
-    # Alerta para uso de sudo desnecessário
-    if is_validation_enabled(tool="sudo") and cmd.startswith("sudo") and not re.search(r'apt|yum|dnf|pacman', cmd):
+    # Exemplo 3: alerta para uso de sudo desnecessário
+    if cmd.startswith("sudo") and not any(x in cmd for x in ["apt", "yum", "dnf", "pacman"]):
         warnings.append("⚠️ Aviso: você usou sudo. Verifique se é realmente necessário.")
 
     return warnings
 
 if __name__ == "__main__":
+    import sys
     if len(sys.argv) < 2:
-        print("Uso: python validate_command.py '<comando>'\n")
-        sys.exit(1)
+        print("Uso: python validate_command.py '<comando>'")
+        exit(1)
 
     command_input = sys.argv[1]
     results = validate_command(command_input)
-
     if results:
         print("\n".join(results))
     else:

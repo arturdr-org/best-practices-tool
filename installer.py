@@ -2,19 +2,36 @@ import getpass
 import os
 import shutil
 import subprocess
-import sys # Added for sys.exit
 from pathlib import Path
-import requests # Added
-from update_practices import update_best_practices_docs # Added
+import yaml
 
-def install_package(package_name):
-    try:
-        print(f"Instalando pacote {package_name}...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-        print(f"Pacote {package_name} instalado com sucesso.")
-    except subprocess.CalledProcessError:
-        print(f"Erro ao instalar o pacote {package_name}.")
-        sys.exit(1)
+def create_default_config():
+    config_file = "config.yaml"
+    if not os.path.exists(config_file):
+        config = {
+            "enabled": True,
+            "disabled_tools": []
+        }
+        with open(config_file, "w") as f:
+            yaml.dump(config, f)
+        print("Arquivo config.yaml criado com configuração padrão.")
+    else:
+        print("Arquivo config.yaml já existe.")
+
+def load_config(config_file="config.yaml"):
+    if not os.path.exists(config_file):
+        return {"enabled": True, "disabled_tools": []}
+    with open(config_file, "r") as f:
+        return yaml.safe_load(f)
+
+config = load_config()
+
+def is_validation_enabled(tool=None):
+    if not config.get("enabled", True):
+        return False
+    if tool and tool in config.get("disabled_tools", []):
+        return False
+    return True
 
 def install_practices_docs():
     os.makedirs("practices", exist_ok=True)
@@ -47,36 +64,6 @@ def install_shell_hook():
             print("Hook já está instalado.")
     else:
         print(f"{bashrc} não encontrado, crie manualmente para habilitar hooks.")
-
-def install_git_hooks():
-    print("Instalando Git hooks...")
-    # Find all git repositories in the home directory
-    home = Path.home()
-    for git_dir in home.glob('**/.git'):
-        if git_dir.is_dir():
-            repo_root = git_dir.parent
-            print(f"Configurando hooks para o repositório: {repo_root}")
-
-            # Create pre-commit hook
-            pre_commit_hook_path = git_dir / "hooks" / "pre-commit"
-            our_pre_commit_script = Path(__file__).parent / "hooks" / "git_hook_pre_commit"
-            our_pre_commit_script = our_pre_commit_script.resolve()
-
-            with open(pre_commit_hook_path, "w") as f:
-                f.write(f"#!/bin/bash\n{our_pre_commit_script}\n")
-            os.chmod(pre_commit_hook_path, 0o755)
-            print(f"  - pre-commit hook instalado em {pre_commit_hook_path}")
-
-            # Create pre-push hook
-            pre_push_hook_path = git_dir / "hooks" / "pre-push"
-            our_pre_push_script = Path(__file__).parent / "hooks" / "git_hook_pre_push"
-            our_pre_push_script = our_pre_push_script.resolve()
-
-            with open(pre_push_hook_path, "w") as f:
-                f.write(f"#!/bin/bash\n{our_pre_push_script}\n")
-            os.chmod(pre_push_hook_path, 0o755)
-            print(f"  - pre-push hook instalado em {pre_push_hook_path}")
-    print("Instalação de Git hooks concluída.")
 
 def install_wrapper():
     home = Path.home()
@@ -121,12 +108,10 @@ def schedule_cron_update():
         print("Cron job de atualização já está agendado.")
 
 def main():
-    install_package("PyYAML") # Install PyYAML
+    create_default_config()
     install_practices_docs()
     install_shell_hook()
-    install_git_hooks() # This function is missing in the provided installer.py, but was in previous versions. I will keep it.
     install_wrapper()
-    update_best_practices_docs() # Call the function to update auto and external practices
     schedule_cron_update()
     print("Instalação completa. Reabra o terminal para aplicar.")
 
