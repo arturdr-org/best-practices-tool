@@ -1,75 +1,86 @@
-# Repositório de Boas Práticas Automatizadas 🚀
+# 🚀 Repositório de Boas Práticas Automatizadas
 
-Este projeto visa automatizar a aplicação de boas práticas no terminal e Git, através da instalação de documentação local, hooks de shell, scripts de validação e wrappers para execução segura de comandos.
-
----
-
-## Conteúdo do repositório
-
-- `practices/` : Documentos em markdown com as melhores práticas para Git, Shell, Segurança, Automação, etc.  
-- `hooks/pre_command_check.sh` : Script shell que intercepta comandos para emitir lembretes e alertas.  
-- `wrapper.sh` : Script wrapper para executar comandos via validador Python.  
-- `validate_command.py` : Script Python que valida comandos e retorna alertas.  
-- `installer.py` : Script que instala documentações, hooks e wrappers automaticamente.
+Este projeto tem como objetivo automatizar a aplicação de boas práticas no terminal e Git, fornecendo documentação, validações e lembretes no ambiente do usuário para maior segurança e eficiência.
 
 ---
 
-## Instalação
+## 📚 Conteúdo do Repositório
 
-Para começar a usar, rode o instalador:
+- `practices/` : Documentos em markdown com as melhores práticas para Git, Bash, Segurança, Automação etc.  
+- `hooks/pre_command_check.sh` : Script shell que intercepta comandos e mostra alertas antes da execução.  
+- `wrapper.sh` : Wrapper para executar comandos via validador Python com confirmação interativa.  
+- `validate_command.py` : Script em Python que valida comandos e emite alertas ou bloqueios.  
+- `installer.py` : Instalador automático que configura todo ambiente, incluindo cron jobs para atualização.  
+- `update_practices_cron.py` : Script para atualização automática diária das boas práticas conforme ferramentas detectadas.  
+- `config.yaml` : Arquivo de configuração para ativar/desativar globalmente ou por ferramenta o sistema de boas práticas.
+
+---
+
+## ⚙️ Instalação
+
+Execute o instalador com:
 
 ```bash
 python3 installer.py
 ```
 
-O script fará:
+Ele fará:
 
-- Criação da pasta `practices/` com documentos de boas práticas.  
-- Configuração do `~/.bashrc` para carregar o hook shell `pre_command_check.sh`.  
-- Instalação do wrapper `run_validated_command.sh` em `~/bin` com alias configurado.
+- Criação da pasta `practices/` com os documentos locais.  
+- Configuração automática do hook shell para alertas no terminal.  
+- Instalação do wrapper shell com alias `run_validated_command`.  
+- Criação do arquivo `config.yaml` padrão.  
+- Agendamento de cron job para atualizar automaticamente boas práticas.
 
-Após a instalação, abra um novo terminal para aplicar as configurações.
+Reabra o terminal para aplicar as alterações.
 
 ---
 
-## Uso
+## 🖥️ Uso
 
-- Para comandos comuns, o hook shell mostrará lembretes automáticos sobre boas práticas.  
-- Para validação mais rigorosa, use o wrapper digitando:
+### Hook Shell (alertas automáticos)
+
+O hook shell é ativado no terminal automaticamente e mostra alertas e dicas enquanto você digita comandos, como:
+
+- ⚠️ Aviso ao usar `rm` sem `-i` para evitar exclusões acidentais  
+- 💡 Sugestão para usar `git pull` antes de `git push`  
+- ⚠️ Alerta para uso cuidadoso do `sudo`
+
+### Wrapper Shell (validação ativa)
+
+Para rodar comandos validados com confirmação, use o alias:
 
 ```bash
 run_validated_command <comando>
 ```
 
-Por exemplo:
+Exemplo:
 
 ```bash
-run_validated_command rm -rf /algum/caminho
+run_validated_command rm -rf /diretorio/importante
 ```
 
-O script validará e emitirá alertas, pedindo confirmação antes de executar o comando.
+Se o comando tiver riscos, o validador emite alertas e pede confirmação antes de executar.
 
 ---
 
-## Atualização automática das boas práticas
+## 🔄 Atualização automática
 
-Após a instalação, um cron job será agendado automaticamente para executar todas as noites às 03:00 AM e atualizar as boas práticas das ferramentas detectadas.
+Uma tarefa agendada via cron roda diariamente às 3h da manhã atualizando as boas práticas específicas para ferramentas detectadas (Docker, Terraform, Ansible, etc.).
 
-Se desejar rodar a atualização manualmente, execute:
+Para rodar manualmente:
 
 ```bash
-python3 /caminho/para/update_practices_cron.py
+python3 update_practices_cron.py
 ```
 
-Para verificar se o cron job está ativo, use:
+Para verificar o cron job:
 
 ```bash
 crontab -l
 ```
 
----
-
-Se desejar remover o cron job, rode:
+Para removê-lo:
 
 ```bash
 crontab -l | grep -v update_practices_cron.py | crontab -
@@ -77,33 +88,52 @@ crontab -l | grep -v update_practices_cron.py | crontab -
 
 ---
 
-## Atualização automática das boas práticas
+## 🔧 Configuração
 
-Após a instalação, um cron job será agendado automaticamente para executar todas as noites às 03:00 AM e atualizar as boas práticas das ferramentas detectadas.
+Edite o arquivo `config.yaml` para ativar ou desativar:
 
-Se desejar rodar a atualização manualmente, execute:
+- O sistema todo (`enabled: true/false`)  
+- Boas práticas para ferramentas específicas, adicionando nomes em `disabled_tools`
 
-```bash
-python3 /caminho/para/update_practices_cron.py
-```
+Exemplo:
 
-Para verificar se o cron job está ativo, use:
-
-```bash
-crontab -l
-```
-
-Para remover o cron job, execute:
-
-```bash
-bash
-crontab -l | grep -v update_practices_cron.py | crontab -
+```yaml
+enabled: true
+disabled_tools:
+  - docker
+  - terraform
 ```
 
 ---
 
-## Atualizações e contribuições
+## 📖 Conteúdos externos
 
-- O repositório pode ser atualizado para adicionar novas regras e práticas facilmente.  
-- Contribuições são bem-vindas!  
-- Para atualizar documentação e hooks, basta rodar o instalador novamente.
+O projeto também baixa automaticamente conteúdos relevantes de repositórios externos com melhores práticas, armazenando localmente em:
+
+```
+external/practice-git/
+external/git-practice/
+```
+
+Assim seu ambiente sempre estará atualizado com as melhores referências.
+
+---
+
+## 🤝 Contribuições e melhorias
+
+Aceitamos sugestões e PRs para:
+
+- Expandir as regras de validação  
+- Melhorar os scripts de instalação e atualização  
+- Integrar com mais ferramentas e IDEs  
+- Otimizar a experiência do usuário no terminal
+
+---
+
+### 🚀 Comece agora!
+
+Clone o repositório, rode o instalador e desfrute de um terminal mais seguro, produtivo e alinhado às melhores práticas!
+
+---
+
+Se precisar de ajuda para configurar ou personalizar, conte comigo! 😄
